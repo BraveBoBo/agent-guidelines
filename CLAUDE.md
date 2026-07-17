@@ -77,6 +77,7 @@ When writing Python:
 * Keep functions small, focused, and easy to read.
 * Do not sacrifice readability for overly clever one-liners.
 * Choose names that make the code self-explanatory.
+* Write docstrings and comments in Google style: a one-line summary, then `Args:`, `Returns:`, `Raises:` sections for modules, classes, and public functions.
 
 Ask yourself: "Would an experienced Python engineer consider this idiomatic and maintainable?" If not, simplify and make it more Pythonic.
 
