@@ -110,6 +110,91 @@ When responding:
 
 Ask yourself: "Did the user explicitly request an English response?" If not, respond in Chinese.
 
+## 8. Naming Conventions
+
+**Google Python Style Guide names; LIBERO-style vocabulary.**
+
+| Item | Rule |
+|---|---|
+| Underscore prefix | Only for names used inside their own module. Anything imported by another file (including tests) gets a public name, never `_merge_xxx()` |
+| Case | `snake_case` functions, modules and files; `CapWords` classes with all-caps acronyms (`IKConfig`, `GPUBatch`); `CAPS` constants |
+| Verbs | `load_*` reads a file, `parse_*` turns a dict or text into an object, `get_*` looks up or computes by name, `is_*`/`has_*` return a bool, `build_*` constructs |
+| Modules and packages | Helper modules are `<domain>_utils.py`; packages are plural nouns; exceptions end in `Error`; tests are `test_*.py` |
+| Imports | Absolute imports of modules, not of classes or functions; no re-exports in `__init__.py` |
+| Renames | Update every caller; never keep the old name as an alias |
+| Config | Tunables live in YAML config groups (`<config>/<group>/default.yaml`, variants beside it), never in module-level constants, global variables, function defaults or YAML files scattered beside scripts |
+
+## 9. Delegate Implementation Work
+
+Your primary responsibilities are analysis, orchestration, and verification. Delegate concrete tasks to subagents through the Agent tool whenever possible.
+
+Limit your own work to clarifying requirements, breaking down plans, assigning tasks, and reviewing results. Delegate implementation work—including extensive code reading, coding, test execution, and bulk edits—to subagents.
+
+## 10. Simplify and Review Every Change
+
+Order per change: edits → `simplify` → `code-review` → tests → commit.
+
+* After any code change, run the `simplify` skill once over the diff and apply what it finds as long as behaviour is preserved. Every change gets one pass, not only complex ones.
+* Then run the `code-review` skill once over the same diff and fix what it finds.
+* This applies to every commit, including subagents' commits (put it in their briefs) and commits from other sessions, which are reviewed before pushing.
+
+## 11. Delete Unneeded Code; No Old-Data Compatibility
+
+* Code for a feature that is no longer needed may be deleted outright, together with its tests, configs and docs. Do not keep it "just in case", behind a flag, or as an alias.
+* Do not keep compatibility with old data formats: no reader-side shims, fallbacks for missing keys of old recordings, converters or version branches, unless the user explicitly asks for a specific format.
+
+## 12. Give Full Paths, One per Line
+
+Whenever a reply names a file or directory (videos, figures, logs, reports, configs), give its full absolute path, never a relative path or a bare filename. Put each path on its own line, for example in a code block, never inline in a sentence or a table cell. For a path on a remote host, give the full remote path and name the host.
+
+## 13. Write Documents Short, in Tables, Without History
+
+This applies to every document (wiki pages, reports, write-ups), including those a subagent writes.
+
+* Prefer tables wherever the content allows.
+* Explain every path: say what it is or holds, never a bare path.
+* Use plain words. Avoid internal names the reader does not know; if one is unavoidable, explain it in a few words.
+* Keep documents short.
+* Do not write history. State the current state, decisions and results, not how they evolved.
+
+## 14. Reply in Short Tables with Clear Inputs and Outputs
+
+Replies follow the same style as documents (section 13):
+
+* Prefer short tables over paragraphs.
+* For every task, change, run or result, state the input (code version, config, data, seeds), the output (files, numbers, decision) and where the output is.
+* Lead with the answer, then only the details needed to act on it.
+
+## 15. Draw Every Figure in the TPAMI Style
+
+Every figure, for a paper or for analysis, uses the project's TPAMI matplotlib style file (`tpami.mplstyle`), applied with `plt.style.use(...)` before the figure is created. This style wins over any generic chart guidance.
+
+| Item | Rule |
+|---|---|
+| Size | Final print size, never rescaled afterwards: width 3.5 in for one column, 7.16 in for two columns |
+| Font | Serif (Times New Roman, falling back to Nimbus Roman or STIX), math in STIX; 9 pt for labels and titles, 8 pt for ticks and legends |
+| Lines | Axes and ticks 0.6 pt, data lines 1.0 pt, markers 3.5 pt; no grid |
+| Colours | Only five colour-blind-safe colours: blue 0072B2, orange E69F00, green 009E73, vermillion D55E00, black; sequential data uses the Blues colormap |
+| Greyscale | Separate the series by marker or line style as well as by colour, so the figure still reads in print |
+| Legend | Square box with a light grey edge, fully opaque |
+| Labels on data | Text over plotted data gets a white box: `bbox={"facecolor": "white", "edgecolor": "none", "pad": 1}` |
+| Output | Both PDF (vector) and PNG (600 dpi), saved with `bbox_inches="tight"` |
+| Location | `figures/<intent>/<name>/`, where `<intent>` is `paper` or `analysis` |
+| Tests and benchmarks | Every test or benchmark run also produces the figures of whatever it measured |
+
+## 16. Write Papers in the IEEE TPAMI Format
+
+| Item | Rule |
+|---|---|
+| LaTeX class | `\documentclass[10pt,journal,compsoc]{IEEEtran}`: two columns |
+| Figure and table width | One column 3.5 in (`\columnwidth`), two columns 7.16 in (`\textwidth`, `figure*`); figures are drawn at that size (section 15) |
+| Captions | Figure captions below the figure ("Fig. 1."), table captions above the table; a caption says what to read off the figure, not only what it shows |
+| Tables | `booktabs` rules (`\toprule`, `\midrule`, `\bottomrule`), no vertical lines; best result in bold |
+| Front matter | Abstract followed by "Index Terms" keywords |
+| References | IEEE numbered style (`IEEEtran.bst`), cited in order of appearance |
+| Notation and terms | Define every symbol and abbreviation at first use, and keep one name per concept throughout (text, figures and tables) |
+| Prose | Short sentences, active voice, present tense for what the method does; numbers with units and the same precision across a table |
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
